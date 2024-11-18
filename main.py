@@ -1,59 +1,93 @@
-#Mad Libs is where you input random words into a story
-import time
+import tkinter as tk
+from tkinter import simpledialog
+import random
 
-print("Welcome to virion haiku.")
+def generate_haiku(color, weapon, theme):
+    """Generates a haiku based on user inputs."""
+    haikus = [
+        f"{color} fades to dusk,\nOur {weapon} strikes without pause—\n{theme}.",
+        f"Shadows close around,\nA {weapon} gleams with sorrow's weight—\n{color} whispers 'farewell'.",
+        f"{color} spills like ink,\nA {weapon} cuts, sharp with regret—\nThe void calls softly.",
+        f"Crimson paints the sky,\nA {weapon} slashes through the air—\n{theme} looms ever still.",
+    ]
+    return random.choice(haikus)
 
+def copy_to_clipboard(text):
+    """Copies the given text to the clipboard."""
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+    root.clipboard_clear()
+    root.clipboard_append(text)
+    root.update()  # Ensure it updates
+    root.destroy()
 
-time.sleep(2)
+def display_haiku(haiku, restart_callback):
+    """Creates a window to display the haiku and provide options to copy, restart, or exit."""
 
-color = input("Enter a color: ")
-plural_noun = input("Enter a weapon: ")
-celebrity = input("Guess your age of death: ")
-time.sleep(2)
-time.sleep(2)
+    def on_copy():
+        copy_to_clipboard(haiku)
+        message_label.config(text="Copied to clipboard!")
 
-print("Pondering the universe.....")
-time.sleep(2)
+    def on_try_again():
+        window.destroy()
+        restart_callback()
 
-print("............................")
-time.sleep(2)
+    def on_exit():
+        quit()
+        window.destroy()
 
+    # Create the main window
+    window = tk.Tk()
+    window.title("Virion Haiku")
 
-print(color + " fade's to dusk,")
-time.sleep(2)
+    # Set a timeout to close the window automatically after 30 seconds
+    window.after(30000, window.destroy)
 
-print("Our " + plural_noun + " strikes without pause- ")
-time.sleep(2)
+    # Create a text area to display the haiku
+    text_area = tk.Text(window, wrap="word", font=("Helvetica", 14), bg="#f4f4f4", fg="#333")
+    text_area.insert("1.0", haiku)
+    text_area.config(state="disabled")
+    text_area.pack(padx=20, pady=20)
 
-print("Death's shadow draws near.")
+    # Add a button to copy the haiku
+    copy_button = tk.Button(window, text="Copy to Clipboard", command=on_copy)
+    copy_button.pack(pady=5)
 
-print("............................")
-time.sleep(2)
-print("............................")
-time.sleep(2)
+    # Add a "Try Again" button
+    try_again_button = tk.Button(window, text="Try Again", command=on_try_again)
+    try_again_button.pack(pady=5)
 
-#Crimson paints the sky,
-#A scythe cuts the air in haste—
-#Shadows close around.
-#Golden light turns cold,
-#A sword gleams with finality—
-#Death waits, ever still.
+    # Add an "Exit" button
+    exit_button = tk.Button(window, text="Exit", command=on_exit)
+    exit_button.pack(pady=5)
 
+    # Message label for feedback
+    message_label = tk.Label(window, text="", font=("Helvetica", 10), fg="green")
+    message_label.pack()
 
-time.sleep(2)
+    window.mainloop()
 
-print("Pondering the universe.....")
-time.sleep(2)
+def main():
+    """Runs the main haiku generation program."""
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
 
-print("............................")
-time.sleep(2)
-print(color + " spills like ink,")
-time.sleep(2)
+    # Get user inputs
 
+    root.geometry("750x250+400+300")
 
-print("A " + plural_noun + " strikes, sharp with regret- ")
-time.sleep(2)
+    color = simpledialog.askstring("Input", "Enter a color:")
+    if not color: return
+    weapon = simpledialog.askstring("Input", "Enter a weapon:")
+    if not weapon: return
+    theme = simpledialog.askstring("Input", "Enter a theme or feeling (e.g., death, hope, sorrow):")
+    if not theme: return
 
-print("The void calls softly.")
+    # Generate a haiku
+    haiku = generate_haiku(color, weapon, theme)
 
-time.sleep(2)
+    # Display the haiku in a window
+    display_haiku(haiku, main)
+    time.sleep(5) 
+if __name__ == "__main__":
+    main()
